@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 // Dynamic API URL depending on the platform (Android Emulator uses 10.0.2.2 to connect to localhost)
+// @ts-ignore
 const API_URL = process.env.EXPO_PUBLIC_API_URL || (
     Platform.OS === 'android' ? 'http://10.0.2.2:3001' : 'http://localhost:3001'
 );
