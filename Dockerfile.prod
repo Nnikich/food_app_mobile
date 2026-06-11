@@ -4,17 +4,17 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 # Copy package dependencies and install
-COPY package*.json ./
+COPY web/package*.json ./
 RUN npm ci
 
 # Copy configurations and source files
-COPY tailwind.config.js ./
-COPY postcss.config.js ./
-COPY tsconfig.json ./
-COPY tsconfig.node.json ./
-COPY vite.config.js ./
-COPY index.html ./
-COPY src ./src/
+COPY web/tailwind.config.js ./
+COPY web/postcss.config.js ./
+COPY web/tsconfig.json ./
+COPY web/tsconfig.node.json ./
+COPY web/vite.config.js ./
+COPY web/index.html ./
+COPY web/src ./src/
 
 # Set production API URL to relative empty string (proxied via Nginx)
 ARG VITE_API_URL=""

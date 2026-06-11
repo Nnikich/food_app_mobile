@@ -3,15 +3,15 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Install dependencies
-COPY package*.json ./
+COPY web/package*.json ./
 RUN npm install
 
 # Copy configuration and source files
-COPY tailwind.config.js ./
-COPY postcss.config.js ./
-COPY vite.config.js ./
-COPY index.html ./
-COPY src ./src/
+COPY web/tailwind.config.js ./
+COPY web/postcss.config.js ./
+COPY web/vite.config.js ./
+COPY web/index.html ./
+COPY web/src ./src/
 
 # Expose Vite dev port
 EXPOSE 5173
