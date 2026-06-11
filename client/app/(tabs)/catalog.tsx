@@ -39,6 +39,12 @@ export default function CatalogScreen() {
     setIsSubOpen(true);
   };
 
+  // Reset pagination on search change
+  useEffect(() => {
+    setVisibleLimit(15);
+    setIsLoadingMore(false);
+  }, [search, filterDifficulty]);
+
   // If user is not premium, render Paywall View
   if (state.subscription !== 'premium') {
     return (
@@ -66,12 +72,6 @@ export default function CatalogScreen() {
 
     return matchesSearch && matchesDifficulty;
   });
-
-  // Reset pagination on search change
-  useEffect(() => {
-    setVisibleLimit(15);
-    setIsLoadingMore(false);
-  }, [search, filterDifficulty]);
 
   // Load more pages
   const handleLoadMore = () => {

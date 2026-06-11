@@ -7,6 +7,8 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL || (
     Platform.OS === 'android' ? 'http://10.0.2.2:3001' : 'http://localhost:3001'
 );
 
+console.log('[apiClient] Base API URL configured as:', API_URL);
+
 // In-memory cache for fast, synchronous header generation
 let cachedToken: string | null = null;
 let cachedUserId: string | null = null;
