@@ -597,7 +597,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                     body: `Время вышло! Шаг: ${stepText}`,
                     sound: true,
                 },
-                trigger: { seconds: totalSeconds } as any,
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+                    seconds: totalSeconds,
+                } as any,
             });
         } catch (err) {
             console.error('Failed to schedule background push notification:', err);
