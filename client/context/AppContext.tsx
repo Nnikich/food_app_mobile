@@ -650,7 +650,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                     body: `Время вышло! Шаг: ${activeTimer.stepText}`,
                     sound: true,
                 },
-                trigger: { seconds: remaining } as any,
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+                    seconds: remaining,
+                } as any,
             });
         } catch (err) {
             console.error('Failed to reschedule background push notification:', err);
