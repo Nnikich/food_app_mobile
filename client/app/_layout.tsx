@@ -2,9 +2,12 @@ import { useFonts } from 'expo-font';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { ActivityIndicator, View } from 'react-native';
+import { useRouter, useSegments } from 'expo-router';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/components/useColorScheme';
+import { useColorScheme } from '../components/useColorScheme';
+import { AppProvider, useAppContext } from '../context/AppContext';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -39,18 +42,58 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <AppProvider>
+      <RootLayoutNav />
+    </AppProvider>
+  );
 }
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const { user, isGuest, isStorageLoaded, authLoading, state } = useAppContext();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isStorageLoaded || authLoading) return;
+
+    const inAuthGroup = segments[0] === 'auth';
+    const inOnboardingGroup = segments[0] === 'onboarding';
+    const hasSession = user !== null || isGuest;
+
+    if (!hasSession && !inAuthGroup) {
+      // Redirect to authorization if no active session
+      router.replace('/auth');
+    } else if (hasSession) {
+      if (!state.onboardingComplete && !inOnboardingGroup) {
+        // Enforce onboarding questionnaire if not complete
+        router.replace('/onboarding');
+      } else if (state.onboardingComplete && (inAuthGroup || inOnboardingGroup)) {
+        // Redirect to main tabs when logged in and onboarding is completed
+        router.replace('/(tabs)');
+      }
+    }
+  }, [user, isGuest, isStorageLoaded, authLoading, state.onboardingComplete, segments]);
+
+  if (!isStorageLoaded || authLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8fafc' }}>
+        <ActivityIndicator size="large" color="#f43f5e" />
+      </View>
+    );
+  }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="auth" options={{ headerShown: false }} />
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+        <Stack.Screen name="recipe/[id]" options={{ presentation: 'card', title: 'Рецепт', headerTintColor: '#f43f5e', headerTitleStyle: { fontFamily: 'SpaceMono' } }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       </Stack>
     </ThemeProvider>
   );
 }
+

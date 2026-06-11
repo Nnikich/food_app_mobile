@@ -12,6 +12,7 @@ export interface ApiResponse<T = any> {
     id: string;
     email: string;
     createdAt: string;
+    subscriptionType?: string;
   };
 }
 

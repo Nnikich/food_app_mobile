@@ -13,6 +13,7 @@ interface User {
   id: string;
   email: string;
   createdAt: string;
+  subscriptionType?: string;
 }
 
 export interface ActiveTimer {
@@ -81,7 +82,7 @@ Notifications.setNotificationHandler({
         shouldShowAlert: true,
         shouldPlaySound: true,
         shouldSetBadge: false,
-    }),
+    } as any),
 });
 
 const initialState: AppState = {
@@ -596,7 +597,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                     body: `Время вышло! Шаг: ${stepText}`,
                     sound: true,
                 },
-                trigger: { seconds: totalSeconds },
+                trigger: { seconds: totalSeconds } as any,
             });
         } catch (err) {
             console.error('Failed to schedule background push notification:', err);
@@ -646,7 +647,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                     body: `Время вышло! Шаг: ${activeTimer.stepText}`,
                     sound: true,
                 },
-                trigger: { seconds: remaining },
+                trigger: { seconds: remaining } as any,
             });
         } catch (err) {
             console.error('Failed to reschedule background push notification:', err);
