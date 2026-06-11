@@ -1,0 +1,48 @@
+{
+  "name": "food-app-server",
+  "version": "1.0.0",
+  "description": "Express backend with Prisma for Food App",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsc && node dist/index.js",
+    "build": "tsc",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:generate": "prisma generate",
+    "db:seed": "prisma db seed"
+  },
+  "prisma": {
+    "seed": "tsx src/seed.ts"
+  },
+  "dependencies": {
+    "@a2seven/yoo-checkout": "^1.1.4",
+    "@prisma/client": "^5.14.0",
+    "bcryptjs": "^2.4.3",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^8.0.10",
+    "winston": "^3.19.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/compression": "^1.8.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.9.1",
+    "@types/nodemailer": "^8.0.0",
+    "nodemon": "^3.1.0",
+    "prisma": "^5.14.0",
+    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3"
+  }
+}

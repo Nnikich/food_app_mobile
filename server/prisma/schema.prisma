@@ -1,0 +1,122 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  password   String
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model VerificationCode {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  code      String
+  expiresAt DateTime
+}
+
+model Recipe {
+  id          String             @id
+  title       String
+  description String?
+  imageUrl    String?
+  time        Int
+  difficulty  String
+  createdAt   DateTime           @default(now())
+  
+  ingredients RecipeIngredient[]
+  techniques  RecipeTechnique[]
+  tags        RecipeTag[]
+  steps       RecipeStep[]
+
+  @@index([difficulty])
+  @@index([createdAt])
+}
+
+model Ingredient {
+  id                String             @id @default(uuid())
+  name              String             @unique
+  recipeIngredients RecipeIngredient[]
+}
+
+model RecipeIngredient {
+  id           String     @id @default(uuid())
+  recipeId     String
+  ingredientId String
+  quantity     String
+  isOptional   Boolean    @default(false)
+  
+  recipe     Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+  @@index([ingredientId])
+}
+
+model Tag {
+  id         String      @id @default(uuid())
+  name       String      @unique
+  recipeTags RecipeTag[]
+}
+
+model RecipeTag {
+  id       String @id @default(uuid())
+  recipeId String
+  tagId    String
+
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+  @@index([tagId])
+}
+
+model Technique {
+  id               String            @id @default(uuid())
+  name             String            @unique
+  recipeTechniques RecipeTechnique[]
+}
+
+model RecipeTechnique {
+  id          String    @id @default(uuid())
+  recipeId    String
+  techniqueId String
+
+  recipe    Recipe    @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  technique Technique @relation(fields: [techniqueId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+  @@index([techniqueId])
+}
+
+model RecipeStep {
+  id       String @id @default(uuid())
+  recipeId String
+  text     String
+  duration Int?
+  stepNum  Int
+
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+}
+
+model UserState {
+  userId                  String    @id
+  preferences             Json      // Object: { technique: [], tags: [], dislikedTags: [], difficulty: [] }
+  shoppingList            Json      // Array of objects: [{ id, name, isChecked, recipeId, recipeTitle }]
+  onboardingComplete      Boolean   @default(false)
+  subscription            String    @default("free")
+  subscriptionType        String?   // "month" or "year"
+  subscriptionExpiresAt   DateTime? // Expiry timestamp
+  yookassaPaymentMethodId String?   // Saved payment card token for autopay
+  autoRenew               Boolean   @default(true)
+  updatedAt               DateTime  @updatedAt
+}

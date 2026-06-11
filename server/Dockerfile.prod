@@ -1,0 +1,30 @@
+FROM node:20-slim
+
+WORKDIR /app
+
+# Install system dependencies required by Prisma engine
+RUN apt-get update -y && apt-get install -y openssl
+
+# Copy dependency configuration files
+COPY package*.json ./
+COPY tsconfig.json ./
+
+# Install all dependencies (including devDependencies needed for compiling TS)
+RUN npm ci
+
+# Copy database schema, source files, and public assets (images)
+COPY prisma ./prisma/
+COPY public ./public/
+COPY src ./src/
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+# Compile TypeScript to JavaScript (dist/ folder)
+RUN npm run build
+
+# Expose backend port
+EXPOSE 3001
+
+# Command to run database schema sync and start compiled application
+CMD ["sh", "-c", "npx prisma db push && node dist/index.js"]

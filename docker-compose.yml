@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: food_app_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: food_app
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - food_app_network
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: food_app_backend
+    restart: always
+    environment:
+      - PORT=3001
+      - JWT_SECRET=super_secret_food_app_jwt_token_key_12345
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/food_app?schema=public
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+    networks:
+      - food_app_network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: food_app_frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3001
+    depends_on:
+      - backend
+    networks:
+      - food_app_network
+
+volumes:
+  pgdata:
+
+networks:
+  food_app_network:
+    driver: bridge
