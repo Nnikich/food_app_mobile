@@ -68,8 +68,30 @@ app.use(helmet({
   }
 }));
 
+const allowedOrigins = [
+  'https://choozi.ru',
+  'http://choozi.ru',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:8081',
+  'http://127.0.0.1:8081'
+];
+
 app.use(cors({
-  origin: ['https://choozi.ru', 'http://choozi.ru', 'http://localhost:5173', 'http://127.0.0.1:5173'],
+  origin: (origin, callback) => {
+    // Allow mobile native app requests (which have no Origin header)
+    if (!origin) {
+      return callback(null, true);
+    }
+    const isAllowed = allowedOrigins.includes(origin) || 
+                      origin.startsWith('expo://') || 
+                      origin.startsWith('chrome-extension://');
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('Blocked by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(compression());
